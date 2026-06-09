@@ -23,7 +23,7 @@ export async function recordFeeding(
     return { success: true };
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return { success: false, error: "Não foi possível conectar ao banco de dados." };
   }

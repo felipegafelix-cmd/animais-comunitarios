@@ -15,7 +15,7 @@ export async function getAnimalsForDashboard(): Promise<AnimalWithStatus[]> {
     return sortAnimals(mockAnimals);
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return sortAnimals(mockAnimals);
   }
@@ -61,7 +61,7 @@ export async function getAnimalById(id: string): Promise<AnimalWithStatus | null
     return mockAnimals.find((a) => a.id === id) ?? null;
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return mockAnimals.find((a) => a.id === id) ?? null;
   }
@@ -103,7 +103,7 @@ export async function getAnimalFeedingHistory(animalId: string): Promise<Feeding
       .sort((a, b) => new Date(b.fed_at).getTime() - new Date(a.fed_at).getTime());
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return mockFeedingLogs
       .filter((log) => log.animal_id === animalId)

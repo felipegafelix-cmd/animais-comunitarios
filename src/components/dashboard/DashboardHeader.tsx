@@ -3,6 +3,7 @@
  * Usa <header> semântico; sticky para acesso rápido ao scroll no celular.
  */
 import { Heart, PawPrint } from "lucide-react";
+import { LogoutButton } from "@/components/dashboard/LogoutButton";
 
 interface DashboardHeaderProps {
   totalAnimals: number;
@@ -32,24 +33,27 @@ export function DashboardHeader({
           </div>
         </div>
 
-        {/* Resumo numérico — visão rápida sem scroll */}
-        <div className="flex items-center gap-2 text-right">
-          <div>
-            <p className="text-xs text-slate-500">Total</p>
-            <p className="text-sm font-semibold text-slate-900">
-              {totalAnimals}
-            </p>
-          </div>
-          {emergencyCount > 0 && (
-            <div
-              className="flex items-center gap-1 rounded-lg bg-red-50 px-2 py-1 text-red-700"
-              role="status"
-              aria-label={`${emergencyCount} emergência${emergencyCount > 1 ? "s" : ""}`}
-            >
-              <Heart className="h-3.5 w-3.5 fill-red-500 text-red-500" />
-              <span className="text-sm font-bold">{emergencyCount}</span>
+        {/* Resumo numérico e Logout */}
+        <div className="flex flex-col items-end gap-1.5">
+          <div className="flex items-center gap-2 text-right">
+            <div>
+              <p className="text-xs text-slate-500">Total</p>
+              <p className="text-sm font-semibold text-slate-900">
+                {totalAnimals}
+              </p>
             </div>
-          )}
+            {emergencyCount > 0 && (
+              <div
+                className="flex items-center gap-1 rounded-lg bg-red-50 px-2 py-1 text-red-700"
+                role="status"
+                aria-label={`${emergencyCount} emergência${emergencyCount > 1 ? "s" : ""}`}
+              >
+                <Heart className="h-3.5 w-3.5 fill-red-500 text-red-500" />
+                <span className="text-sm font-bold">{emergencyCount}</span>
+              </div>
+            )}
+          </div>
+          <LogoutButton />
         </div>
       </div>
     </header>
