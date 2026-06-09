@@ -2,9 +2,9 @@
  * Camada de acesso a dados dos animais.
  * Tenta Supabase; se não configurado, retorna mock para desenvolvimento.
  */
-import { mockAnimals } from "@/lib/data/mock-animals";
+import { mockAnimals, mockFeedingLogs } from "@/lib/data/mock-animals";
 import { createSupabaseServerClient, isSupabaseConfigured } from "@/lib/supabase/server";
-import type { AnimalWithStatus } from "@/types";
+import type { AnimalWithStatus, FeedingLog } from "@/types";
 
 /**
  * Busca todos os animais com status de alimentação para o dashboard.
@@ -50,6 +50,79 @@ export async function getAnimalsForDashboard(): Promise<AnimalWithStatus[]> {
   );
 
   return sortAnimals(animalsWithFeeding);
+}
+
+/**
+ * Busca um único animal pelo ID, incluindo último status de alimentação.
+ * Retorna null se não encontrado.
+ */
+export async function getAnimalById(id: string): Promise<AnimalWithStatus | null> {
+  if (!isSupabaseConfigured) {
+    return mockAnimals.find((a) => a.id === id) ?? null;
+  }
+
+  const supabase = createSupabaseServerClient();
+  if (!supabase) {
+    return mockAnimals.find((a) => a.id === id) ?? null;
+  }
+
+  const { data: animal, error } = await supabase
+    .from("animals")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error || !animal) {
+    console.error("[getAnimalById]", error?.message);
+    return mockAnimals.find((a) => a.id === id) ?? null;
+  }
+
+  const { data: lastFeed } = await supabase
+    .from("feeding_logs")
+    .select("fed_at, fed_by_name")
+    .eq("animal_id", animal.id)
+    .order("fed_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return {
+    ...animal,
+    last_fed_at: lastFeed?.fed_at ?? null,
+    last_fed_by: lastFeed?.fed_by_name ?? null,
+  };
+}
+
+/**
+ * Busca o histórico de alimentação de um animal (mais recentes primeiro).
+ * Limite de 20 registros para a view do perfil.
+ */
+export async function getAnimalFeedingHistory(animalId: string): Promise<FeedingLog[]> {
+  if (!isSupabaseConfigured) {
+    return mockFeedingLogs
+      .filter((log) => log.animal_id === animalId)
+      .sort((a, b) => new Date(b.fed_at).getTime() - new Date(a.fed_at).getTime());
+  }
+
+  const supabase = createSupabaseServerClient();
+  if (!supabase) {
+    return mockFeedingLogs
+      .filter((log) => log.animal_id === animalId)
+      .sort((a, b) => new Date(b.fed_at).getTime() - new Date(a.fed_at).getTime());
+  }
+
+  const { data: logs, error } = await supabase
+    .from("feeding_logs")
+    .select("*")
+    .eq("animal_id", animalId)
+    .order("fed_at", { ascending: false })
+    .limit(20);
+
+  if (error || !logs) {
+    console.error("[getAnimalFeedingHistory]", error?.message);
+    return [];
+  }
+
+  return logs;
 }
 
 /** Garante ordem consistente: emergência → alfabético */

@@ -2,7 +2,7 @@
  * Dados de demonstração — usados quando Supabase ainda não está configurado.
  * Permite visualizar o dashboard imediatamente após clonar o projeto.
  */
-import type { AnimalWithStatus } from "@/types";
+import type { AnimalWithStatus, FeedingLog } from "@/types";
 
 export const mockAnimals: AnimalWithStatus[] = [
   {
@@ -68,5 +68,44 @@ export const mockAnimals: AnimalWithStatus[] = [
     updated_at: "2026-06-09T11:00:00Z",
     last_fed_at: null,
     last_fed_by: null,
+  },
+];
+
+/** Logs de demonstração — permite visualizar histórico no perfil sem Supabase */
+export const mockFeedingLogs: FeedingLog[] = [
+  {
+    id: "f1",
+    animal_id: "1",
+    fed_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    fed_by_name: "Ana",
+    notes: "Ração seca e água fresca",
+  },
+  {
+    id: "f2",
+    animal_id: "1",
+    fed_at: new Date(Date.now() - 14 * 60 * 60 * 1000).toISOString(),
+    fed_by_name: "Carlos",
+    notes: null,
+  },
+  {
+    id: "f3",
+    animal_id: "2",
+    fed_at: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    fed_by_name: "Carlos",
+    notes: "Sachê de frango — comeu pouco",
+  },
+  {
+    id: "f4",
+    animal_id: "3",
+    fed_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    fed_by_name: "Mariana",
+    notes: "Ração com pedaços de carne",
+  },
+  {
+    id: "f5",
+    animal_id: "3",
+    fed_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+    fed_by_name: "Ana",
+    notes: null,
   },
 ];
